@@ -4,8 +4,9 @@ import axios from "axios";
 export default function Home() {
   const [inputData, setInputData] = useState("");
   const [responseData, setResponseData] = useState(null);
-  const [selectedFilters, setSelectedFilters] = useState([]);
-  const [error, setError] = useState(null);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  const [error, setError] = useState<string | null>(null);
 
   const API_URL = "https://bajaj-finserv-cyan.vercel.app/bfhl"; // Replace with actual backend URL
 
@@ -22,7 +23,11 @@ export default function Home() {
       const response = await axios.post(API_URL, parsedData);
       setResponseData(response.data);
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message); // ✅ TypeScript now knows err has a message
+      } else {
+        setError("An unknown error occurred"); // ✅ Handles unexpected error types
+      }
       setResponseData(null);
     }
   };
@@ -31,7 +36,7 @@ export default function Home() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-800">BFHL Challenge</h1>
-        
+
         {/* Textarea Input */}
         <textarea
           className="w-full h-40 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
